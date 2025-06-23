@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toll-Rizz Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+    body {
+      background: linear-gradient(135deg, #000, #007847);
+      color: #FFD700;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    .dashboard-container {
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .dashboard-panel {
+      background: rgba(0, 0, 0, 0.95);
+      border: 3px solid #FFD700;
+      box-shadow: 0 0 30px #FFD700, 0 0 15px #007847;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 1400px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      position: relative;
+    }
+    .panel-section {
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 15px #FFD700;
+      width: 30%;
+      min-width: 250px;
+      text-align: center;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1;
+    }
+    .map-container {
+      display: none;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 15px;
+      border: 3px solid #FFD700;
+      box-shadow: 0 0 20px #FFD700, inset 0 0 10px #009B3A;
+      border-radius: 15px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      max-height: 450px;
+    }
+    #realMap {
+      width: 100%;
+      height: 400px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #009B3A;
+    }
+    #tollTime {
+      font-size: 1.1em;
+      color: #99FF99;
+      margin-top: 5px;
+    }
+    .car-animation {
+      width: 100px;
+      height: 50px;
+      margin: 10px auto;
+      display: block;
+      filter: drop-shadow(0 0 10px #FFD700);
+    }
+    .car-animation.start-driving {
+      animation: drive 5s linear infinite, pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes drive {
+      0% { transform: translateX(-100px); }
+      100% { transform: translateX(calc(100% + 100px)); }
+    }
+    @keyframes pulse {
+      0%, 100% { filter: drop-shadow(0 0 10px #FFD700); }
+      50% { filter: drop-shadow(0 0 20px #009B3A); }
+    }
+    .notification-panel {
+      position: fixed;
+      right: 10px;
+      top: 150px;
+      width: 150px;
+      height: 120px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 0 15px #FFD700;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .notification {
+      font-size: 0.8em;
+      color: #99FF99;
+      padding: 6px;
+      margin: 4px 0;
+      background: rgba(0, 100, 0, 0.7);
+      border-radius: 5px;
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+      display: none;
+    }
+    .notification.visible {
+      display: block;
+    }
+    .T-Riz-logo {
+      font-size: 28px;
+      background: rgba(0, 100, 0, 0.9);
+      padding: 10px 15px;
+      color: #FFD700;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #FFD700;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      width: 100%;
+      text-align: center;
+      margin: 0;
+      padding: 10px 0;
+    }
+    button {
+      padding: 10px;
+      border-radius: 10px;
+      background: linear-gradient(45deg, #009B3A, #FFD700);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      box-shadow: 0 0 10px #FFD700;
+    }
+    .cashpot-tab {
+      width: 100%;
+      max-height: 250px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px #FFD700;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .cashpot-tab div {
+      font-size: 2em;
+      cursor: pointer;
+    }
+    select {
+      padding: 12px;
+      margin: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #FFD700;
+      border: 2px solid #009B3A;
+      border-radius: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1em;
+    }
+    #tollFeedback {
+      margin-top: 10px;
+      font-size: 1.2em;
+      color: #99FF99;
+    }
+    #voicePopup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 100, 0, 0.9);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #FFD700;
+      z-index: 1000;
+      color: #FFD700;
+      font-size: 1.3em;
+      text-align: center;
+      border: 2px solid #FFD700;
+    }
+    #voicePopup.show {
+      display: block;
+    }
+    #ticketList {
+      list-style: none;
+      padding: 0;
+      color: #99FF99;
+      font-size: 1.1em;
+    }
+    #balance {
+      color: #99FF99;
+      font-size: 1.1em;
+    }
+    @media (max-width: 768px) {
+      .panel-section {
+        width: 100%;
+      }
+      .notification-panel {
+        width: 120px;
+        height: 100px;
+        right: 5px;
+        top: 120px;
+      }
+      .notification {
+        font-size: 0.7em;
+        padding: 4px;
+      }
+      .T-Riz-logo {
+        font-size: 20px;
+      }
+      h1 {
+        font-size: 2em;
+      }
+      button {
+        width: 100%;
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-panel">
+      <div class="T-Riz-logo">T-Riz</div>
+      <h1>Toll-Rizz Road Dashboard</h1>
+      <div class="panel-section">
+        <h3>Card Info</h3>
+        <p>**** **** **** 1234</p>
+        <button title="Add a new card">Add Card</button>
+        <button title="Edit your card">Edit Card</button>
+        <button title="Delete card">Delete Card</button>
+      </div>
+      <div class="panel-section">
+        <h3>Toll & Dream</h3>
+        <div class="dream-section">
+          <select id="tollSelect">
+            <option value="">Select Toll</option>
+            <option value="T1">T1 - May Pen</option>
+            <option value="T2">T2 - Spanish Town</option>
+          </select>
+        </div>
+        <button id="buyTicket" title="Buy a ticket">Buy Ticket</button>
+        <button id="driveButton" title="Start driving">Drive</button>
+        <button id="speakButton" title="Talk to me">🎤 Speak</button>
+        <p id="tollFeedback"></p>
+        <p id="balance"></p>
+      </div>
+      <div class="cashpot-tab">
+        <div title="1 - Duppy">👻</div>
+        <div title="2 - Small Man">👦🏽</div>
+        <div title="3 - Dead">⚰️</div>
+        <div title="4 - Egg">🥚</div>
+        <div title="5 - Thief">🦹</div>
+        <div title="6 - Strong Man">🏋🏽</div>
+        <div title="7 - Married Woman">👰</div>
+        <div title="8 - Belly">🤰</div>
+        <div title="9 - Cow">🐄</div>
+        <div title="10 - White Woman">👩🏻</div>
+        <div title="11 - Small House">🏠</div>
+        <div title="12 - Goat">🐐</div>
+        <div title="13 - Dog">🐶</div>
+        <div title="14 - Rat">🐀</div>
+        <div title="15 - Big Man">👨🏽</div>
+        <div title="16 - Fresh Water">💧</div>
+        <div title="17 - Johncrow">🦅</div>
+        <div title="18 - White Man">👨🏻</div>
+        <div title="19 - Baby">👶</div>
+        <div title="20 - Horse">🐎</div>
+        <div title="21 - Big House">🏰</div>
+        <div title="22 - Church">⛪</div>
+        <div title="23 - Gold">🪙</div>
+        <div title="24 - Fire">🔥</div>
+        <div title="25 - Fish">🐟</div>
+        <div title="26 - Weak Man">🙍🏽‍♂️</div>
+        <div title="27 - Old Woman">👵</div>
+        <div title="28 - Old Man">👴</div>
+        <div title="29 - Black Man">👨🏿</div>
+        <div title="30 - Ring">💍</div>
+        <div title="31 - Young Girl">👧</div>
+        <div title="32 - Drop Pan">🎰</div>
+        <div title="33 - Silver">🥈</div>
+        <div title="34 - Fowl">🐔</div>
+        <div title="35 - Crocodile">🐊</div>
+        <div title="36 - Chinese Man">👨‍🦲</div>
+      </div>
+      <div class="panel-section" style="width: 100%;">
+        <h3>Your Tickets</h3>
+        <ul id="ticketList">
+          {% if tickets %}
+            {% for ticket in tickets %}
+              <li>Ticket #{{ ticket.ticket_number }} for {{ 'May Pen' if ticket.toll == 'T1' else 'Spanish Town' }}</li>
+            {% endfor %}
+          {% else %}
+            <li>No tickets yet. Buy one!</li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="map-container" id="mapContainer">
+        <h3>GPS Route (Jamaica)</h3>
+        <div id="realMap"></div>
+        <p id="tollTime"></p>
+        <svg class="car-animation" viewBox="0 0 100 50">
+          <defs>
+            <linearGradient id="taxiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FFD700; stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#009B3A; stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect x="5" y="15" width="90" height="20" fill="url(#taxiGradient)" rx="5" />
+          <circle cx="20" cy="40" r="7" fill="#000" stroke="#FFD700" stroke-width="2" />
+          <circle cx="80" cy="40" r="7" fill="#000" stroke="#FFD700" stroke-width="2" />
+          <rect x="30" y="5" width="40" height="15" fill="url(#taxiGradient)" rx="3" />
+          <text x="50" y="30" font-size="10" fill="#000" text-anchor="middle">TAXI</text>
+        </svg>
+      </div>
+    </div>
+    <div class="notification-panel" id="notificationPanel"></div>
+  </div>
+  <div id="voicePopup">
+    <p id="popupText"></p>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    let mapInitialized = false;
+    let driving = false;
+    let listening = false;
+    const mapContainer = document.getElementById('mapContainer');
+    const mapDiv = document.getElementById('realMap');
+    const tollTime = document.getElementById('tollTime');
+    const driveButton = document.getElementById('driveButton');
+    const speakButton = document.getElementById('speakButton');
+    const buyTicketBtn = document.getElementById('buyTicket');
+    const tollSelect = document.getElementById('tollSelect');
+    const tollFeedback = document.getElementById('tollFeedback');
+    const voicePopup = document.getElementById('voicePopup');
+    const popupText = document.getElementById('popupText');
+    const ticketList = document.getElementById('ticketList');
+    const car = document.querySelector('.car-animation');
+    let recognition = null;
+
+    // Notification loop
+    const notifications = [
+      'User purchased Goat (12)',
+      'User purchased Small House (11)',
+      'User purchased Baby (19)',
+      'User purchased Fish (25)',
+      'User purchased Gold (23)',
+      'User purchased Ring (30)',
+      'User purchased Dog (13)',
+      'User purchased Horse (20)',
+      'User purchased Church (22)',
+      'User purchased Egg (4)'
+    ];
+    let currentIndex = 0;
+    function updateNotifications() {
+      const panel = document.getElementById('notificationPanel');
+      panel.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const index = (currentIndex + i) % notifications.length;
+        const div = document.createElement('div');
+        div.className = 'notification visible';
+        div.textContent = notifications[index];
+        panel.appendChild(div);
+      }
+      currentIndex = (currentIndex + 1) % notifications.length;
+    }
+    setInterval(updateNotifications, 3000);
+    updateNotifications();
+
+    // Format ticket number
+    function formatTicketNumber(num) {
+      const str = String(num).padStart(6, '0');
+      return `${str.slice(0, 3)}-${str.slice(3, 6)}-${str.slice(5)}`;
+    }
+
+    // Speak text with British male voice
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.volume = 1;
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      const voices = speechSynthesis.getVoices();
+      const britishMaleVoice = voices.find(voice => voice.lang === 'en-GB' && voice.name.includes('Male')) ||
+                               voices.find(voice => voice.lang === 'en-GB') || voices[0];
+      utterance.voice = britishMaleVoice;
+      speechSynthesis.speak(utterance);
+    }
+
+    // Load voices and speak
+    speechSynthesis.onvoiceschanged = () => {
+      speak('{{ welcome }}');
+    };
+
+    // Show popup
+    function showPopup(message) {
+      popupText.textContent = message;
+      voicePopup.classList.add('show');
+      setTimeout(() => voicePopup.classList.remove('show'), 4000);
+      speak(message);
+    }
+
+    // Add ticket to list
+    function addTicketToList(toll, ticketNumber) {
+      const li = document.createElement('li');
+      li.textContent = `Ticket #${formatTicketNumber(ticketNumber)} for ${toll === 'T1' ? 'May Pen' : 'Spanish Town'}`;
+      ticketList.appendChild(li);
+      if (ticketList.querySelector('li').textContent === 'No tickets yet. Buy one!') {
+        ticketList.innerHTML = '';
+        ticketList.appendChild(li);
+      }
+    }
+
+    // Check microphone permission
+    async function checkMicPermission() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        return true;
+      } catch (error) {
+        console.error('Mic permission error:', error);
+        return false;
+      }
+    }
+
+    // Toggle voice recognition
+    async function toggleRecognition() {
+      if (!listening) {
+        const micAllowed = await checkMicPermission();
+        if (!micAllowed) {
+          showPopup('Microphone access denied. Enable it in your browser settings.');
+          return;
+        }
+
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+          listening = true;
+          speakButton.textContent = '🎤 Stop';
+          tollFeedback.textContent = 'Listening for Cash Pot words... Say "Cow" or "Goat".';
+        };
+
+        recognition.onresult = (event) => {
+          const command = event.results[0][0].transcript.toLowerCase();
+          tollFeedback.textContent = `You said: ${command}`;
+          if (command.includes('buy ticket') || command.includes('purchase ticket')) {
+            const toll = tollSelect.value;
+            if (!toll) {
+              showPopup('Please select a toll first.');
+              recognition.start();
+              return;
+            }
+            fetch('/buy-ticket', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `toll=${toll}`
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.error) {
+                showPopup(data.error);
+              } else {
+                showPopup(data.message);
+                addTicketToList(toll, data.message.match(/\d+/)[0]);
+                document.getElementById('balance').textContent = `Balance: ${data.balance} JMD`;
+              }
+              if (listening) recognition.start();
+            })
+            .catch(() => {
+              showPopup('Error buying ticket.');
+              if (listening) recognition.start();
+            });
+          } else if (command.startsWith('buy ')) {
+            const cashpot = command.replace('buy ', '').replace(/\s/g, '_');
+            fetch('/buy-cashpot', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `cashpot=${cashpot}`
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.message) {
+                showPopup(data.message);
+                document.getElementById('balance').textContent = `Balance: ${data.balance} JMD`;
+              } else {
+                showPopup(data.error);
+              }
+              if (listening) recognition.start();
+            })
+            .catch(() => {
+              showPopup('Error buying Cash Pot ticket.');
+              if (listening) recognition.start();
+            });
+          } else {
+            fetch('/interpret-dream', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `dream=${encodeURIComponent(command)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.message) {
+                showPopup(data.message);
+              }
+              if (listening) recognition.start();
+            })
+            .catch(() => {
+              if (listening) recognition.start();
+            });
+          }
+        };
+
+        recognition.onerror = (event) => {
+          tollFeedback.textContent = `Voice error: ${event.error}`;
+          if (listening) recognition.start();
+        };
+
+        recognition.onend = () => {
+          if (listening) {
+            try {
+              recognition.start();
+            } catch {
+              listening = false;
+              speakButton.textContent = '🎤 Speak';
+              showPopup('Voice stopped. Click Speak to try again.');
+            }
+          }
+        };
+
+        recognition.start();
+      } else {
+        listening = false;
+        speakButton.textContent = '🎤 Speak';
+        tollFeedback.textContent = 'Click Speak to talk again.';
+        if (recognition) recognition.stop();
+      }
+    }
+
+    // Toll selection
+    tollSelect.addEventListener('change', () => {
+      const toll = tollSelect.value;
+      if (!toll) {
+        tollFeedback.textContent = 'Please select a toll.';
+        tollTime.textContent = '';
+        return;
+      }
+      fetch('/calculate-time', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `toll=${toll}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        tollFeedback.textContent = data.message || data.error;
+        tollTime.textContent = data.message ? `Estimated time to ${toll === 'T1' ? 'May Pen' : 'Spanish Town'}: ${toll === 'T1' ? '30 minutes' : '20 minutes'}` : '';
+        speak(data.message || data.error);
+      })
+      .catch(() => {
+        tollFeedback.textContent = 'Error checking time.';
+        tollTime.textContent = '';
+        speak('Error checking time.');
+      });
+    });
+
+    // Drive button
+    driveButton.addEventListener('click', () => {
+      driving = !driving;
+      if (driving) {
+        mapContainer.style.display = 'block';
+        car.classList.add('start-driving');
+        driveButton.textContent = 'Stop Driving';
+        speak('{{ drive_start }}');
+        if (!mapInitialized) {
+          const map = L.map('realMap').setView([18.1096, -77.2975], 8);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 18
+          }).addTo(map);
+          L.marker([18.2258, -78.1336]).addTo(map)
+            .bindPopup('Savanna-la-Mar')
+            .openPopup();
+          mapInitialized = true;
+        }
+        const toll = tollSelect.value;
+        tollTime.textContent = toll ? `Estimated time to ${toll === 'T1' ? 'May Pen' : 'Spanish Town'}: ${toll === 'T1' ? '30 minutes' : '20 minutes'}` : '';
+      } else {
+        mapContainer.style.display = 'none';
+        car.classList.remove('start-driving');
+        driveButton.textContent = 'Drive';
+        tollTime.textContent = '';
+        speechSynthesis.cancel();
+      }
+    });
+
+    // Buy ticket
+    buyTicketBtn.addEventListener('click', () => {
+      const toll = tollSelect.value;
+      if (!toll) {
+        showPopup('Please select a toll.');
+        return;
+      }
+      fetch('/buy-ticket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `toll=${toll}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          showPopup(data.error);
+        } else {
+          showPopup(data.message);
+          addTicketToList(toll, data.message.match(/\d+/)[0]);
+          document.getElementById('balance').textContent = `Balance: ${data.balance} JMD`;
+        }
+      })
+      .catch(() => showPopup('Error buying ticket.'));
+    });
+
+    // Speak button
+    speakButton.addEventListener('click', toggleRecognition);
+
+    // Initialize
+    window.onload = () => {
+      document.getElementById('balance').textContent = `Balance: {{ balance }} JMD`;
+    };
+  </script>
+</body>
+</html>
