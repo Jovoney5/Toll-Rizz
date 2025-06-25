@@ -222,26 +222,63 @@
       z-index: 2;
     }
     @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 10px;
+      }
+      .dashboard {
+        padding: 15px;
+      }
       .top-sections {
         flex-direction: column;
         align-items: center;
       }
       .panel-section {
         width: 100%;
-        max-width: 350px;
+        max-width: 90%;
+        margin-bottom: 10px;
       }
       .cashpot-tab {
         max-width: 100%;
+        padding: 10px;
       }
       .notification-panel {
-        width: 150px;
+        width: 80%;
+        max-width: 150px;
         right: 10px;
+        top: 100px;
       }
       .logo {
-        font-size: 28px;
+        font-size: 24px;
+        padding: 8px;
       }
       h1 {
-        font-size: 24px;
+        font-size: 20px;
+      }
+      #map {
+        height: 300px;
+      }
+      .map-container {
+        max-height: 350px;
+      }
+      button, select {
+        width: 100%;
+        max-width: 200px;
+        font-size: 0.9em;
+      }
+    }
+    @media (max-width: 480px) {
+      .logo {
+        font-size: 20px;
+      }
+      h1 {
+        font-size: 18px;
+      }
+      .cashpot-tab div {
+        font-size: 1.5em;
+      }
+      .notification-panel {
+        width: 90%;
+        top: 80px;
       }
     }
   </style>
@@ -276,42 +313,42 @@
         </div>
       </div>
       <div class="cashpot-tab">
-        <div title="1 - Duppy">👻</div>
-        <div title="2 - Small Man">👦🏽</div>
-        <div title="3 - Dead">⚰️</div>
-        <div title="4 - Egg">🥚</div>
-        <div title="5 - Thief">🦹</div>
-        <div title="6 - Strong Man">🏋🏽</div>
-        <div title="7 - Married Woman">👰</div>
-        <div title="8 - Belly">🤰</div>
-        <div title="9 - Cow">🐄</div>
-        <div title="10 - White Woman">👩🏻</div>
-        <div title="11 - Small House">🏠</div>
-        <div title="12 - Goat">🐐</div>
-        <div title="13 - Dog">🐶</div>
-        <div title="14 - Rat">🐀</div>
-        <div title="15 - Big Man">👨🏽</div>
-        <div title="16 - Fresh Water">💧</div>
-        <div title="17 - Johncrow">🦅</div>
-        <div title="18 - White Man">👨🏻</div>
-        <div title="19 - Baby">👶</div>
-        <div title="20 - Horse">🐎</div>
-        <div title="21 - Big House">🏰</div>
-        <div title="22 - Church">⛪</div>
-        <div title="23 - Gold">🪙</div>
-        <div title="24 - Fire">🔥</div>
-        <div title="25 - Fish">🐟</div>
-        <div title="26 - Weak Man">🙍🏽‍♂️</div>
-        <div title="27 - Old Woman">👵</div>
-        <div title="28 - Old Man">👴</div>
-        <div title="29 - Black Man">👨🏿</div>
-        <div title="30 - Ring">💍</div>
-        <div title="31 - Young Girl">👧</div>
-        <div title="32 - Drop Pan">🎰</div>
-        <div title="33 - Silver">🥈</div>
-        <div title="34 - Fowl">🐔</div>
-        <div title="35 - Crocodile">🐊</div>
-        <div title="36 - Chinese Man">👨‍🦲</div>
+        <div title="1 - Duppy" data-cashpot="duppy">👻</div>
+        <div title="2 - Small Man" data-cashpot="small_man">👦🏽</div>
+        <div title="3 - Dead" data-cashpot="dead">⚰️</div>
+        <div title="4 - Egg" data-cashpot="egg">🥚</div>
+        <div title="5 - Thief" data-cashpot="thief">🦹</div>
+        <div title="6 - Strong Man" data-cashpot="strong_man">🏋🏽</div>
+        <div title="7 - Married Woman" data-cashpot="married_woman">👰</div>
+        <div title="8 - Belly" data-cashpot="belly">🤰</div>
+        <div title="9 - Cow" data-cashpot="cow">🐄</div>
+        <div title="10 - White Woman" data-cashpot="white_woman">👩🏻</div>
+        <div title="11 - Small House" data-cashpot="small_house">🏠</div>
+        <div title="12 - Goat" data-cashpot="goat">🐐</div>
+        <div title="13 - Dog" data-cashpot="dog">🐶</div>
+        <div title="14 - Rat" data-cashpot="rat">🐀</div>
+        <div title="15 - Big Man" data-cashpot="big_man">👨🏽</div>
+        <div title="16 - Fresh Water" data-cashpot="fresh_water">💧</div>
+        <div title="17 - Johncrow" data-cashpot="johncrow">🦅</div>
+        <div title="18 - White Man" data-cashpot="white_man">👨🏻</div>
+        <div title="19 - Baby" data-cashpot="baby">👶</div>
+        <div title="20 - Horse" data-cashpot="horse">🐎</div>
+        <div title="21 - Big House" data-cashpot="big_house">🏰</div>
+        <div title="22 - Church" data-cashpot="church">⛪</div>
+        <div title="23 - Gold" data-cashpot="gold">🪙</div>
+        <div title="24 - Fire" data-cashpot="fire">🔥</div>
+        <div title="25 - Fish" data-cashpot="fish">🐟</div>
+        <div title="26 - Weak Man" data-cashpot="weak_man">🙍🏽‍♂️</div>
+        <div title="27 - Old Woman" data-cashpot="old_woman">👵</div>
+        <div title="28 - Old Man" data-cashpot="old_man">👴</div>
+        <div title="29 - Black Man" data-cashpot="black_man">👨🏿</div>
+        <div title="30 - Ring" data-cashpot="ring">💍</div>
+        <div title="31 - Young Girl" data-cashpot="young_girl">👧</div>
+        <div title="32 - Drop Pan" data-cashpot="drop_pan">🎰</div>
+        <div title="33 - Silver" data-cashpot="silver">🥈</div>
+        <div title="34 - Fowl" data-cashpot="fowl">🐔</div>
+        <div title="35 - Crocodile" data-cashpot="crocodile">🐊</div>
+        <div title="36 - Chinese Man" data-cashpot="chinese_man">👨‍🦲</div>
       </div>
       <div class="panel-section tickets-section">
         <h3>Your Tickets</h3>
@@ -375,6 +412,7 @@
       'User purchased Egg (4)'
     ];
     let currentIndex = 0;
+
     function updateNotifications() {
       const panel = document.getElementById('notificationPanel');
       panel.innerHTML = '';
@@ -447,7 +485,7 @@
       listening = true;
       speakButton.textContent = '🎤 Listening';
       speakButton.disabled = true;
-      tollFeedback.textContent = 'Listening for commands... Say "weather" or "dream".';
+      tollFeedback.textContent = 'Listening for commands... Say "weather", "dream", or "buy ticket".';
 
       recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = 'en-US';
@@ -455,13 +493,13 @@
       recognition.maxAlternatives = 1;
       recognition.continuous = true;
 
-      recognition.onresult = (event) => {
+      recognition.onresult = async (event) => {
         const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
         tollFeedback.textContent = `You said: ${command}`;
 
         if (silenceTimer) clearTimeout(silenceTimer);
 
-        silenceTimer = setTimeout(() => {
+        silenceTimer = setTimeout(async () => {
           if (command.includes('weather') && lastCommand !== 'weather') {
             weatherAudio.play();
             lastCommand = 'weather';
@@ -475,15 +513,42 @@
               lastCommand = null;
               return;
             }
-            const ticketNum = Math.floor(Math.random() * 900000) + 100000;
-            showPopup(`Ticket purchased! Number: ${ticketNum}`);
-            addTicketToList(toll, ticketNum);
-            document.getElementById('balance').textContent = `Balance: ${Math.floor(Math.random() * 5000) + 1000} JMD`;
+            try {
+              const response = await fetch('/buy-ticket', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `toll=${toll}`
+              });
+              const data = await response.json();
+              if (data.error) {
+                showPopup(data.error);
+              } else {
+                showPopup(data.message);
+                addTicketToList(toll, data.message.match(/\d+/)[0]);
+                document.getElementById('balance').textContent = `Balance: ${data.balance} JMD`;
+              }
+            } catch (error) {
+              showPopup('Error purchasing ticket.');
+            }
             lastCommand = 'buy ticket';
           } else if (command.startsWith('buy ') && lastCommand !== command) {
             const cashpot = command.replace('buy ', '').replace(/\s/g, '_');
-            showPopup(`Cash Pot ${cashpot} purchased!`);
-            document.getElementById('balance').textContent = `Balance: ${Math.floor(Math.random() * 5000) + 1000} JMD`;
+            try {
+              const response = await fetch('/buy-cashpot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `cashpot=${cashpot}`
+              });
+              const data = await response.json();
+              if (data.error) {
+                showPopup(data.error);
+              } else {
+                showPopup(data.message);
+                document.getElementById('balance').textContent = `Balance: ${data.balance} JMD`;
+              }
+            } catch (error) {
+              showPopup('Error purchasing Cash Pot ticket.');
+            }
             lastCommand = command;
           } else {
             lastCommand = null;
@@ -531,7 +596,7 @@
       }
     }
 
-    driveButton.addEventListener('click', () => {
+    driveButton.addEventListener('click', async () => {
       driving = !driving;
       if (driving) {
         mapContainer.style.display = 'block';
@@ -549,7 +614,19 @@
           mapInitialized = true;
         }
         const toll = tollSelect.value;
-        tollTime.textContent = toll ? `Estimated time to ${toll === 'T1' ? 'May Pen' : 'Spanish Town'}: ${toll === 'T1' ? '30 minutes' : '20 minutes'}` : '';
+        if (toll) {
+          try {
+            const response = await fetch('/calculate-time', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `toll=${toll}`
+            });
+            const data = await response.json();
+            tollTime.textContent = data.message || '';
+          } catch (error) {
+            tollTime.textContent = '';
+          }
+        }
         startContinuousRecognition();
       } else {
         mapContainer.style.display = 'none';
@@ -561,29 +638,32 @@
       }
     });
 
-    buyTicketBtn.addEventListener('click', () => {
+    buyTicketBtn.addEventListener('click', async () => {
       const toll = tollSelect.value;
       if (!toll) {
         showPopup('Please select a toll.');
         return;
       }
-      const ticketNum = Math.floor(Math.random() * 900000) + 100000;
-      showPopup(`Ticket purchased! Number: ${ticketNum}`);
-      addTicketToList(toll, ticketNum);
-      document.getElementById('balance').textContent = `Balance: ${Math.floor(Math.random() * 5000) + 1000} JMD`;
-    });
-
-    speakButton.addEventListener('click', () => {
-      if (!driving) {
-        if (listening) {
-          stopRecognition();
+      try {
+        const response = await fetch('/buy-ticket', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `toll=${toll}`
+        });
+        const data = await response.json();
+        if (data.error) {
+          showPopup(data.error);
         } else {
-          startContinuousRecognition();
+          showPopup(data.message);
+          addTicketToList(toll, data.message.match(/\d+/)[0]);
+          document.getElementById('balance').textContent = `Balance: ${data.balance} JMD`;
         }
+      } catch (error) {
+        showPopup('Error purchasing ticket.');
       }
     });
 
-    tollSelect.addEventListener('change', () => {
+    tollSelect.addEventListener('change', async () => {
       const toll = tollSelect.value;
       if (!toll) {
         tollFeedback.textContent = 'Please select a toll.';
@@ -592,14 +672,56 @@
       }
       const message = `Selected ${toll === 'T1' ? 'May Pen' : 'Spanish Town'} toll`;
       tollFeedback.textContent = message;
-      tollTime.textContent = `Estimated time to ${toll === 'T1' ? 'May Pen' : 'Spanish Town'}: ${toll === 'T1' ? '30 minutes' : '20 minutes'}`;
-      speak(message);
+      try {
+        const response = await fetch('/calculate-time', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `toll=${toll}`
+        });
+        const data = await response.json();
+        tollTime.textContent = data.message || '';
+        speak(message);
+      } catch (error) {
+        tollTime.textContent = '';
+        speak(message);
+      }
     });
 
-    window.onload = () => {
-      document.getElementById('balance').textContent = `Balance: 2500 JMD`;
+    document.querySelectorAll('.cashpot-tab div').forEach(div => {
+      div.addEventListener('click', async () => {
+        const cashpot = div.getAttribute('data-cashpot');
+        try {
+          const response = await fetch('/buy-cashpot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `cashpot=${cashpot}`
+          });
+          const data = await response.json();
+          if (data.error) {
+            showPopup(data.error);
+          } else {
+            showPopup(data.message);
+            document.getElementById('balance').textContent = `Balance: ${data.balance} JMD`;
+          }
+        } catch (error) {
+          showPopup('Error purchasing Cash Pot ticket.');
+        }
+      });
+    });
+
+    window.onload = async () => {
+      document.getElementById('balance').textContent = `Balance: 500 JMD`;
       tollFeedback.textContent = 'Click Drive to start listening.';
       speakButton.disabled = true;
+      try {
+        const response = await fetch('/');
+        const data = await response.json();
+        if (data.welcome) {
+          speak(data.welcome);
+        }
+      } catch (error) {
+        speak('Welcome to Toll-Rizz Dashboard!');
+      }
     };
   </script>
 </body>
